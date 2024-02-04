@@ -5,19 +5,21 @@ import torch.optim as optim
 import torch.nn.functional as Functional
 import os
 
+from typing import List
+
 
 class Linear_QNet(nn.Module):
-    def __init__(self, input_size, hidden_size, output_size):
+    def __init__(self, input_size: int, hidden_size: int, output_size: int):
         super().__init__()
         self.linear1 = nn.Linear(input_size, hidden_size)
         self.linear2 = nn.Linear(hidden_size, output_size)
 
-    def forward(self, x):
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
         x = Functional.relu(self.linear1(x))
         x = self.linear2(x)
         return x
 
-    def save(self, file_name='model.pth'):
+    def save(self, file_name: str = 'model.pth') -> None:
         model_folder_path = './model'
         if not os.path.exists(model_folder_path):
             os.makedirs(model_folder_path)
@@ -25,7 +27,7 @@ class Linear_QNet(nn.Module):
         file_name = os.path.join(model_folder_path, file_name)
         torch.save(self.state_dict(), file_name)
 
-    def load(self, file_name='model.pth'):
+    def load(self, file_name: str = 'model.pth') -> None:
         model_folder_path = './model'
         file_name = os.path.join(model_folder_path, file_name)
         if os.path.exists(file_name):
@@ -36,14 +38,15 @@ class Linear_QNet(nn.Module):
 
 
 class QTrainer:
-    def __init__(self, model, lr, gamma):
+    def __init__(self, model: nn.Module, lr: float, gamma: float):
         self.lr = lr
         self.gamma = gamma
         self.model = model
         self.optimizer = optim.Adam(model.parameters(), lr=self.lr)
         self.criterion = nn.MSELoss()
 
-    def train_step(self, state, action, reward, next_state, done):
+    def train_step(self, state: np.ndarray, action: List[int], reward: int, next_state: np.ndarray,
+                   done: bool):
         state = torch.tensor(np.array(state), dtype=torch.float)
         next_state = torch.tensor(np.array(next_state), dtype=torch.float)
         action = torch.tensor(np.array(action), dtype=torch.long)

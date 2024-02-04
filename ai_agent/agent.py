@@ -3,6 +3,9 @@ import random
 import numpy as np
 from collections import deque
 from . import Linear_QNet, QTrainer
+from .game import AIAgentGame
+
+from typing import List, Union
 
 MAX_MEMORY = 100_000
 BATCH_SIZE = 1000
@@ -11,7 +14,7 @@ LR = 0.001
 
 class Agent:
 
-    def __init__(self, game):
+    def __init__(self, game: AIAgentGame):
         self.game = game
         self.n_games = 0
         self.epsilon = 0  # randomness
@@ -20,13 +23,13 @@ class Agent:
         self.model = Linear_QNet(self.game.input_size, 256, self.game.output_size)
         self.trainer = QTrainer(self.model, lr=LR, gamma=self.gamma)
 
-    def get_state(self):
+    def get_state(self) -> np.ndarray:
         return np.array(self.game.get_state(), dtype=int)
 
-    def remember(self, state, action, reward, next_state, done):
+    def remember(self, state: np.ndarray, action: List[int], reward: int, next_state: np.ndarray, done: bool) -> None:
         self.memory.append((state, action, reward, next_state, done))  # popleft if MAX_MEMORY is reached
 
-    def train_long_memory(self):
+    def train_long_memory(self) -> None:
         if len(self.memory) > BATCH_SIZE:
             mini_sample = random.sample(self.memory, BATCH_SIZE)  # list of tuples
         else:
@@ -37,13 +40,13 @@ class Agent:
         # for state, action, reward, next_state, done in mini_sample:
         #    self.trainer.train_step(state, action, reward, next_state, done)
 
-    def train_short_memory(self, state, action, reward, next_state, done):
+    def train_short_memory(self, state: np.ndarray, action: List[int], reward: int, next_state: np.ndarray, done: bool):
         self.trainer.train_step(state, action, reward, next_state, done)
 
-    def get_action(self, state, training=True):
+    def get_action(self, state: np.ndarray, training: bool = True) -> List[int]:
         # random moves: tradeoff exploration / exploitation
         size = self.game.output_size
-        final_move = [0] * size
+        final_move: List[int] = [0] * size
         if training:
             self.epsilon = 80 - self.n_games
 
@@ -62,7 +65,28 @@ class Agent:
             final_move[move] = 1
         return final_move
 
-    def train(self, model_path=None, training=True):
+    def play(self, model_path: str):
+        if not model_path:
+            return
+
+        self.model.load(model_path)
+
+        record = 0
+
+        while True:
+            state = self.get_state()
+            final_move = self.get_action(state, training=False)
+
+            # perform move and get new state
+            reward, done, score = self.game.play_step(final_move)
+
+            if done:
+                if record < score:
+                    record = score
+
+                print('Game:', self.n_games, 'Score:', score, 'Record:', record)
+
+    def train(self, model_path: Union[str, None] = None, training: bool = True) -> None:
         plot_scores = []
         plot_mean_scores = []
         total_score = 0

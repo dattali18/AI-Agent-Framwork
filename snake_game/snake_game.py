@@ -5,6 +5,8 @@ from collections import namedtuple
 import numpy as np
 from ai_agent.game import AIAgentGame
 
+from typing import List, Tuple
+
 pygame.init()
 font = pygame.font.Font('arial.ttf', 25)
 
@@ -38,12 +40,21 @@ class SnakeGameAI(AIAgentGame):
 
     def __init__(self, w=640, h=480):
         super().__init__(input_size=11, output_size=3)
+
         self.w = w
         self.h = h
         # init display
         self.display = pygame.display.set_mode((self.w, self.h))
         pygame.display.set_caption('Snake')
         self.clock = pygame.time.Clock()
+
+        # init values
+        self.direction = None
+        self.frame_iteration = None
+        self.food = None
+        self.score = None
+        self.snake = None
+        self.head = None
 
         self.reset()
 
@@ -213,7 +224,7 @@ class SnakeGameAI(AIAgentGame):
 
         return state
 
-    def play_step(self, action):
+    def play_step(self, action: List[int]) -> Tuple[int, bool, int]:
         self.frame_iteration += 1
         # 1. collect user input
         for event in pygame.event.get():
@@ -246,5 +257,3 @@ class SnakeGameAI(AIAgentGame):
         self.clock.tick(SPEED)
         # 6. return game over and score
         return reward, game_over, self.score
-
-
