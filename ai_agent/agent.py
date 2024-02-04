@@ -24,7 +24,7 @@ class Agent:
         self.trainer = QTrainer(self.model, lr=LR, gamma=self.gamma)
 
     def get_state(self) -> np.ndarray:
-        return np.array(self.game.get_state(), dtype=int)
+        return np.array(self.game.get_state(), dtype=float)
 
     def remember(self, state: np.ndarray, action: List[int], reward: int, next_state: np.ndarray, done: bool) -> None:
         self.memory.append((state, action, reward, next_state, done))  # popleft if MAX_MEMORY is reached
@@ -49,9 +49,11 @@ class Agent:
         final_move: List[int] = [0] * size
         if training:
             self.epsilon = 80 - self.n_games
+            # self.epsilon = 100 + random.randint(0, 80) - self.n_games
 
-            if random.randint(0, 200) < self.epsilon:
-                move = random.randint(0, size)
+            # if random.randint(0, 200) < self.epsilon:
+            if random.randint(0, 10) == (self.n_games % 10):
+                move = random.randint(0, size - 1)
                 final_move[move] = 1
             else:
                 state0 = torch.tensor(state, dtype=torch.float)
@@ -81,6 +83,9 @@ class Agent:
             reward, done, score = self.game.play_step(final_move)
 
             if done:
+                self.game.reset()
+                self.n_games += 1
+
                 if record < score:
                     record = score
 
@@ -98,12 +103,12 @@ class Agent:
         while True:
             # get old state
             state_old = self.get_state()
-
             # get move
             final_move = self.get_action(state_old, training=training)
 
             # perform move and get new state
             reward, done, score = self.game.play_step(final_move)
+
             state_new = self.get_state()
 
             # train short memory
@@ -129,8 +134,14 @@ class Agent:
                 print('Game:', self.n_games, 'Score:', score, 'Record:', record)
 
                 # mean_score = total_score / self.n_games
+                if self.n_games == 1000:
+                    if model_path:
+                        self.model.save(model_path)
+                    else:
+                        self.model.save()
 
-                plot_scores.append(score)
-                total_score += score
-                mean_score = total_score / self.n_games
-                plot_mean_scores.append(mean_score)
+                    break
+                # plot_scores.append(score)
+                # total_score += score
+                # mean_score = total_score / self.n_games
+                # plot_mean_scores.append(mean_score)

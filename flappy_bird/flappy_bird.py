@@ -47,6 +47,8 @@ class Player(pygame.sprite.Sprite):
         self.level = None
         self.hit = False
 
+        self.distance = 0  # Add a new attribute for distance
+
     def change_speed(self, x, y):
         """ Change the speed of the player. """
         self.change_x += x
@@ -69,7 +71,7 @@ class Player(pygame.sprite.Sprite):
 
     def jump(self):
         """ Called when user hits 'jump' button. """
-        self.change_y = -6
+        self.change_y = -3
 
     def update(self):
         # Gravity
@@ -82,6 +84,9 @@ class Player(pygame.sprite.Sprite):
         # Move up/down
         self.rect.y += self.change_y
 
+        # Update distance traveled
+        self.distance += self.change_x
+
         block_hit_list = pygame.sprite.spritecollide(self, self.pipes, False)
         for block in block_hit_list:
 
@@ -93,6 +98,7 @@ class Player(pygame.sprite.Sprite):
             self.rect.y = 50
             self.rect.x = 50
             self.score = 0
+            self.distance = 0
             self.hit = True
 
 
@@ -128,7 +134,9 @@ class Pipe(pygame.sprite.Sprite):
 
 class FlappyBirdGame(AIAgentGame):
     def __init__(self):
-        super().__init__(output_size=2, input_size=5)
+        super().__init__(output_size=2, input_size=6)
+
+        self.distance = 0
         self.screen = pygame.display.set_mode([SCREEN_WIDTH, SCREEN_HEIGHT])
         pygame.display.set_caption('FlappySquare')
 
@@ -136,6 +144,16 @@ class FlappyBirdGame(AIAgentGame):
         self.pipe_count = 0
         self.reward = 0.
         self.done = False
+        self.clock = None
+        self.font = None
+        self.player = None
+        self.pipe_list = None
+        self.all_sprite_list = None
+        self.state = None
+        self.text = None
+        self.pipe_hole = None
+        self.h = None
+        self.pipe = None
 
         self.reset()
 
@@ -148,6 +166,7 @@ class FlappyBirdGame(AIAgentGame):
         self.player = Player(50, 300)
 
         self.pipe_count = 0
+        self.distance = 0
 
         self.all_sprite_list.add(self.player)
 
@@ -167,6 +186,37 @@ class FlappyBirdGame(AIAgentGame):
 
         self.all_sprite_list.update()
 
+    # def play_step(self, action):
+    #     # 1. collect user input
+    #     for event in pygame.event.get():
+    #         if event.type == pygame.QUIT:
+    #             pygame.quit()
+    #             quit()
+    #
+    #     # 2. move
+    #     self.reward = 0
+    #     self._move(action)
+    #
+    #     if self.all_pipes[-1].rect.x <= random.randrange(50, 100, 2):
+    #         self.pipe_creation()
+    #
+    #     if self.all_pipes[self.pipe_count].rect.x + 70 <= self.player.rect.x:  # +70 -> pipe width
+    #         self.player.score += 1
+    #         self.pipe_count += 1
+    #         self.reward += 10
+    #
+    #     self.render()
+    #
+    #     # 3. check if game over
+    #     if not self.player.hit:
+    #         done = False
+    #         self.reward -= 10
+    #     else:
+    #         done = True
+    #         self.reward += 1
+    #
+    #     return self.reward, done, self.player.score
+
     def play_step(self, action):
         # 1. collect user input
         for event in pygame.event.get():
@@ -181,28 +231,36 @@ class FlappyBirdGame(AIAgentGame):
         if self.all_pipes[-1].rect.x <= random.randrange(50, 100, 2):
             self.pipe_creation()
 
-        if self.all_pipes[self.pipe_count].rect.x + 70 <= self.player.rect.x:  # +70 -> pipe width
-            self.player.score += 1
-            self.pipe_count += 1
-            self.reward += 10
+        # Reward for survival (being alive)
+        self.reward = 1
+        self.distance += 1
 
         self.render()
 
         # 3. check if game over
         if not self.player.hit:
             done = False
-            self.reward -= 10
         else:
             done = True
-            self.reward += 1
+            # self.distance = 0
+            self.reward = -10  # Penalty for hitting an obstacle
 
-        return self.reward, done, self.player.score
+        # 4.
 
-    def render(self, fps=120):
+        if self.all_pipes[self.pipe_count].rect.x + 70 <= self.player.rect.x:  # +70 -> pipe width
+            self.player.score += 1
+            self.pipe_count += 1
+            self.reward = 10  # Reward for passing a pipe
+
+        return self.reward, done, self.distance
+
+    def render(self, fps=60):
         self.all_sprite_list.update()
         self.screen.fill(LIGHTBLUE)
         self.all_sprite_list.draw(self.screen)
-        self.text = self.font.render("Score: " + str(self.player.score), True, WHITE)
+        # self.text = self.font.render("Score: " + str(self.player.score), True, WHITE)
+        # self.screen.blit(self.text, [50, 50])
+        self.text = self.font.render(f"Pipes: {self.player.score} Distance: {self.distance}", True, WHITE)
         self.screen.blit(self.text, [50, 50])
 
         pygame.display.flip()
@@ -227,10 +285,16 @@ class FlappyBirdGame(AIAgentGame):
         """Get the current state of the environment."""
         player_x = self.player.rect.x
         player_y = self.player.rect.y
-        pipe_x = self.all_pipes[self.pipe_count].rect.x + 70  # pipe x position + 70 (pipe width)
-        pipe_y_bot = self.all_pipes[self.pipe_count].rect.y - player_y  # range to bot pipe
-        pipe_y_top = pipe_y_bot - self.pipe_hole  # range to top pipe
-        player_to_pipe_distance = pipe_x - player_x
-        player_y_vel = self.player.change_y / 10
 
-        return [player_y, player_to_pipe_distance, pipe_y_bot, pipe_y_top, player_y_vel]
+        pipe_x = self.all_pipes[self.pipe_count].rect.x + 70  # pipe x position + 70 (pipe width)
+
+        pipe_y_bot = self.all_pipes[self.pipe_count].rect.y - player_y  # range to bottom pipe
+        pipe_y_top = pipe_y_bot - self.pipe_hole  # range to top pipe
+
+        player_to_pipe_distance = pipe_x - player_x
+        player_y_vel = self.player.change_y
+
+        state = [player_y, pipe_x, pipe_y_bot, pipe_y_top, player_to_pipe_distance, player_y_vel]
+
+        x = np.array(state, dtype=float)
+        return (x - np.min(x)) / (np.max(x) - np.min(x))
