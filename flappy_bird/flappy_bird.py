@@ -5,6 +5,7 @@ from ai_agent.game import AIAgentGame
 
 # -- Global constants
 # Colors
+
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 BLUE = (50, 50, 255)
@@ -254,7 +255,7 @@ class FlappyBirdGame(AIAgentGame):
 
         return self.reward, done, self.distance
 
-    def render(self, fps=60):
+    def render(self, fps=100):
         self.all_sprite_list.update()
         self.screen.fill(LIGHTBLUE)
         self.all_sprite_list.draw(self.screen)
