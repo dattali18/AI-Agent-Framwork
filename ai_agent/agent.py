@@ -51,8 +51,8 @@ class Agent:
             self.epsilon = 100 - self.n_games
             # self.epsilon = 100 + random.randint(0, 80) - self.n_games
 
-            # if random.randint(0, 300) < self.epsilon:
-            if random.randint(0, 15) == (self.n_games % 10):
+            if random.randint(0, 150) < self.epsilon:
+                # if random.randint(0, 10) == (self.n_games % 10):
                 move = random.randint(0, size - 1)
                 final_move[move] = 1
             else:

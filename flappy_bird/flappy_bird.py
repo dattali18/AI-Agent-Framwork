@@ -1,3 +1,5 @@
+from typing import List
+
 import pygame
 import random
 import numpy as np
@@ -218,7 +220,7 @@ class FlappyBirdGame(AIAgentGame):
     #
     #     return self.reward, done, self.player.score
 
-    def play_step(self, action):
+    def play_step(self, action: List[int]):
         # 1. collect user input
         for event in pygame.event.get():
             if event.type == pygame.QUIT:

@@ -7,8 +7,8 @@ import os
 
 from typing import List
 
-HIDDEN_SIZE_1 = 32
-HIDDEN_SIZE_2 = 64
+HIDDEN_SIZE_1 = 64
+HIDDEN_SIZE_2 = 128
 
 
 class Linear_QNet(nn.Module):
