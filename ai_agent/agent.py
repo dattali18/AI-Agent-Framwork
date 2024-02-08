@@ -48,11 +48,11 @@ class Agent:
         size = self.game.output_size
         final_move: List[int] = [0] * size
         if training:
-            self.epsilon = 100 - self.n_games
+            # self.epsilon = self.n_games / 1000
             # self.epsilon = 100 + random.randint(0, 80) - self.n_games
 
-            if random.randint(0, 150) < self.epsilon:
-                # if random.randint(0, 10) == (self.n_games % 10):
+            # if random.random() < self.epsilon or random.randint(0, 10) == (self.n_games % 10):
+            if random.randint(0, 10) == (self.n_games % 10):
                 move = random.randint(0, size - 1)
                 final_move[move] = 1
             else:
