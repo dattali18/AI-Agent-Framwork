@@ -8,7 +8,7 @@ from ai_agent.game import AIAgentGame
 from typing import List, Tuple
 
 pygame.init()
-font = pygame.font.Font('arial.ttf', 25)
+# font = pygame.font.Font('arial.ttf', 25)
 
 
 # font = pygame.font.SysFont('arial', 25)

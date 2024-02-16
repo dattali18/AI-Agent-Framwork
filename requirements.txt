@@ -1,4 +1,3 @@
 pygame
 torch
-torchvision
 numpy

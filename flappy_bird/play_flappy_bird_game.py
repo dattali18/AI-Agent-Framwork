@@ -1,9 +1,9 @@
-from snake_game.snake_game import SnakeGameAI
+from flappy_bird.flappy_bird import FlappyBirdGame
 from ai_agent import Agent
 
 
 def main():
-    game = SnakeGameAI()
+    game = FlappyBirdGame()
     agent = Agent(game)
     agent.play(model_path="model.pth")
 
