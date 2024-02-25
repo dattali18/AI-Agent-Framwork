@@ -2,15 +2,13 @@ import tkinter as tk
 from tkinter import ttk
 from PIL import Image, ImageTk
 
-from snake_game.play_snake_game import main as play_snake
-from flappy_bird.play_flappy_bird_game import main as play_flappy
-
-
 def play_game(game_name):
     if game_name == "Snake":
-        play_snake()
+        # play_snake()
+        print("Snake")
     elif game_name == "Flappy Bird":
-        play_flappy()
+        # play_flappy()
+        print("Flappy Bird")
     else:
         print("Invalid")
 

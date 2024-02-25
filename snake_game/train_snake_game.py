@@ -5,7 +5,7 @@ from ai_agent import Agent
 def main():
     game = SnakeGameAI()
     agent = Agent(game)
-    agent.train(model_path="model.pth", training=False)
+    agent.train(model_path="model.pth")
 
 
 if __name__ == "__main__":
