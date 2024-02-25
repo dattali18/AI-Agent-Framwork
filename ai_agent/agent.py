@@ -20,7 +20,7 @@ class Agent:
         self.epsilon = 0  # randomness
         self.gamma = 0.9  # discount rate
         self.memory = deque(maxlen=MAX_MEMORY)  # popleft()
-        self.model = Linear_QNet(self.game.input_size, 256, self.game.output_size)
+        self.model = Linear_QNet(self.game.input_size, self.game.output_size)
         self.trainer = QTrainer(self.model, lr=LR, gamma=self.gamma)
 
     def get_state(self) -> np.ndarray:
@@ -48,10 +48,10 @@ class Agent:
         size = self.game.output_size
         final_move: List[int] = [0] * size
         if training:
-            self.epsilon = 80 - self.n_games
+            # self.epsilon = self.n_games / 1000
             # self.epsilon = 100 + random.randint(0, 80) - self.n_games
 
-            # if random.randint(0, 200) < self.epsilon:
+            # if random.random() < self.epsilon or random.randint(0, 10) == (self.n_games % 10):
             if random.randint(0, 10) == (self.n_games % 10):
                 move = random.randint(0, size - 1)
                 final_move[move] = 1
