@@ -25,7 +25,7 @@ root.title("Game Selection")
 # root.geometry("400x300")  # Set window size
 
 style = ttk.Style()
-style.theme_use('aqua')
+#style.theme_use('aqua')
 
 vstack = ttk.Frame(root)
 vstack.pack(ipadx=100, ipady=20)  # Add external padding
@@ -38,7 +38,7 @@ window_title.pack(pady=10)  # Add internal padding
 games = [
     {"name": "Snake", "image_path": "snake.jpg"},
     {"name": "Flappy Bird", "image_path": "flappy.webp"},
-    {"name": "In Development", "image_path": "snake.jpg"}
+    {"name": "Dino", "image_path": "snake.jpg"}
 ]
 
 for game in games:

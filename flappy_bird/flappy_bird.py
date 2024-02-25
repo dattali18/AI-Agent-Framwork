@@ -132,7 +132,6 @@ class Pipe(pygame.sprite.Sprite):
         self.rect.x -= self.change_x
         self.top_rect.x -= self.change_x
 
-
 class FlappyBirdGame(AIAgentGame):
     def __init__(self):
         super().__init__(output_size=2, input_size=6)
