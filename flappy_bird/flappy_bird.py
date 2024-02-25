@@ -186,37 +186,6 @@ class FlappyBirdGame(AIAgentGame):
 
         self.all_sprite_list.update()
 
-    # def play_step(self, action):
-    #     # 1. collect user input
-    #     for event in pygame.event.get():
-    #         if event.type == pygame.QUIT:
-    #             pygame.quit()
-    #             quit()
-    #
-    #     # 2. move
-    #     self.reward = 0
-    #     self._move(action)
-    #
-    #     if self.all_pipes[-1].rect.x <= random.randrange(50, 100, 2):
-    #         self.pipe_creation()
-    #
-    #     if self.all_pipes[self.pipe_count].rect.x + 70 <= self.player.rect.x:  # +70 -> pipe width
-    #         self.player.score += 1
-    #         self.pipe_count += 1
-    #         self.reward += 10
-    #
-    #     self.render()
-    #
-    #     # 3. check if game over
-    #     if not self.player.hit:
-    #         done = False
-    #         self.reward -= 10
-    #     else:
-    #         done = True
-    #         self.reward += 1
-    #
-    #     return self.reward, done, self.player.score
-
     def play_step(self, action):
         # 1. collect user input
         for event in pygame.event.get():

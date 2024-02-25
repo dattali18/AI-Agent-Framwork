@@ -8,7 +8,8 @@ import sys
 from pygame import Surface, SurfaceType
 import numpy as np
 from ai_agent.game import AIAgentGame
-#from dinasaur import Dinosaur
+
+# from dinasaur import Dinosaur
 pygame.init()
 
 # Global Constants
@@ -16,8 +17,9 @@ SCREEN_HEIGHT = 600
 SCREEN_WIDTH = 1100
 SCREEN = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
-RUNNING = [pygame.image.load(os.path.join("Assets/Dino", "DinoRun1.png")), #here i am using os.path.join to join the path of the image
-           pygame.image.load(os.path.join("Assets/Dino", "DinoRun2.png"))] 
+RUNNING = [pygame.image.load(os.path.join("Assets/Dino", "DinoRun1.png")),
+           # here i am using os.path.join to join the path of the image
+           pygame.image.load(os.path.join("Assets/Dino", "DinoRun2.png"))]
 JUMPING = pygame.image.load(os.path.join("Assets/Dino", "DinoJump.png"))
 DUCKING = [pygame.image.load(os.path.join("Assets/Dino", "DinoDuck1.png")),
            pygame.image.load(os.path.join("Assets/Dino", "DinoDuck2.png"))]
@@ -26,14 +28,14 @@ SMALL_CACTUS = [pygame.image.load(os.path.join("Assets/Cactus", "SmallCactus1.pn
                 pygame.image.load(os.path.join("Assets/Cactus", "SmallCactus2.png")),
                 pygame.image.load(os.path.join("Assets/Cactus", "SmallCactus3.png"))]
 LARGE_CACTUS: list[Union[Surface, SurfaceType]] = [pygame.image.load(os.path.join("Assets/Cactus", "LargeCactus1.png")),
-                pygame.image.load(os.path.join("Assets/Cactus", "LargeCactus2.png")),
-                pygame.image.load(os.path.join("Assets/Cactus", "LargeCactus3.png"))]
+                                                   pygame.image.load(os.path.join("Assets/Cactus", "LargeCactus2.png")),
+                                                   pygame.image.load(os.path.join("Assets/Cactus", "LargeCactus3.png"))]
 
 BIRD = [pygame.image.load(os.path.join("Assets/Bird", "Bird1.png")),
         pygame.image.load(os.path.join("Assets/Bird", "Bird2.png"))]
 
-
 BG = pygame.image.load(os.path.join("Assets/Other", "Track.png"))
+
 
 class Dinosaur:
     X_POS = 80
@@ -111,6 +113,7 @@ class Dinosaur:
     def draw(self, SCREEN):
         SCREEN.blit(self.image, (self.dino_rect.x, self.dino_rect.y))
 
+
 class Obstacle:
     # This is the parent class for all the
     def __init__(self, image, type):
@@ -130,12 +133,14 @@ class Obstacle:
     def draw(self, SCREEN):
         SCREEN.blit(self.image[self.type], self.rect)
 
+
 # This is the class for the small cactus
 class SmallCactus(Obstacle):
     def __init__(self, image):
         self.type = random.randint(0, 2)
         super().__init__(image, self.type)
         self.rect.y = 325
+
 
 class LargeCactus(Obstacle):
     def __init__(self, image):
@@ -154,8 +159,9 @@ class Bird(Obstacle):
     def draw(self, SCREEN):
         if self.index >= 9:
             self.index = 0
-        SCREEN.blit(self.image[self.index//5], self.rect)
+        SCREEN.blit(self.image[self.index // 5], self.rect)
         self.index += 1
+
 
 def main():
     global game_speed, x_pos_bg, y_pos_bg, points, obstacles
@@ -195,8 +201,7 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
                 pygame.quit()  # Uninitialize Pygame modules
-                sys.exit()     # Exit the Python interpreter
-   
+                sys.exit()  # Exit the Python interpreter
 
         SCREEN.fill((255, 255, 255))
         userInput = pygame.key.get_pressed()
@@ -226,11 +231,11 @@ def main():
 
         background()
 
-
         score()
 
         clock.tick(30)
         pygame.display.update()
+
 
 def menu(death_count):
     global points
@@ -259,7 +264,9 @@ def menu(death_count):
             if event.type == pygame.KEYDOWN:
                 main()
 
+
 menu(death_count=0)
+
 
 class DinoAI(AIAgentGame):
     def __init__(self):
