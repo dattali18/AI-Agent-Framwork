@@ -83,10 +83,13 @@ Follow these steps to integrate the AI-Agent-Framework into your game and train/
 ### Images
 
 Main GUI Window
-<img width="400" src="/AI-Agent-Framwork/images/main_window.png">
+
+<img width="400" src="https://github.com/dattali18/AI-Agent-Framwork/blob/main/images/main_window.png">
 
 Snake Game Window
-<img width="400" src="/AI-Agent-Framwork/images/snake_window.png">
+
+<img width="400" src="https://github.com/dattali18/AI-Agent-Framwork/blob/main/images/snake_window.png">
 
 Flappy Game Window
-<img width="400" src="/AI-Agent-Framwork/images/flappy_window.png">
+
+<img width="400" src="https://github.com/dattali18/AI-Agent-Framwork/blob/main/images/flappy_window.png">
