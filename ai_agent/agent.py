@@ -20,7 +20,7 @@ class Agent:
         self.epsilon = 0  # randomness
         self.gamma = 0.9  # discount rate
         self.memory = deque(maxlen=MAX_MEMORY)  # popleft()
-        self.model = Linear_QNet(self.game.input_size, self.game.output_size)
+        self.model = Linear_QNet(self.game.input_size, 256, self.game.output_size)
         self.trainer = QTrainer(self.model, lr=LR, gamma=self.gamma)
 
     def get_state(self) -> np.ndarray:
@@ -92,9 +92,6 @@ class Agent:
                 print('Game:', self.n_games, 'Score:', score, 'Record:', record)
 
     def train(self, model_path: Union[str, None] = None, training: bool = True) -> None:
-        plot_scores = []
-        plot_mean_scores = []
-        total_score = 0
         record = 0
 
         if model_path is not None:
@@ -118,7 +115,6 @@ class Agent:
             self.remember(state_old, final_move, reward, state_new, done)
 
             if done:
-                # train long memory, plot result
                 self.game.reset()
                 self.n_games += 1
                 self.train_long_memory()
@@ -132,16 +128,3 @@ class Agent:
 
                 # Print to console
                 print('Game:', self.n_games, 'Score:', score, 'Record:', record)
-
-                # mean_score = total_score / self.n_games
-                if self.n_games == 1000:
-                    if model_path:
-                        self.model.save(model_path)
-                    else:
-                        self.model.save()
-
-                    break
-                # plot_scores.append(score)
-                # total_score += score
-                # mean_score = total_score / self.n_games
-                # plot_mean_scores.append(mean_score)

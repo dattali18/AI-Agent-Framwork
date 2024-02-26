@@ -2,7 +2,6 @@ import pygame
 import random
 import numpy as np
 from ai_agent.game import AIAgentGame
-
 # -- Global constants
 # Colors
 
@@ -132,9 +131,10 @@ class Pipe(pygame.sprite.Sprite):
         self.rect.x -= self.change_x
         self.top_rect.x -= self.change_x
 
+
 class FlappyBirdGame(AIAgentGame):
-    def __init__(self):
-        super().__init__(output_size=2, input_size=6)
+    def __init__(self, main_window=None):
+        super().__init__(output_size=2, input_size=6, main_window=main_window)
 
         self.distance = 0
         self.screen = pygame.display.set_mode([SCREEN_WIDTH, SCREEN_HEIGHT])
@@ -190,6 +190,11 @@ class FlappyBirdGame(AIAgentGame):
         # 1. collect user input
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
+                if self.main_window is not None:
+                    self.main_window()
+                # else:
+                #     pygame.quit()
+                #     quit()
                 pygame.quit()
                 quit()
 

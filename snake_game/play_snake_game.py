@@ -1,4 +1,4 @@
-from snake_game.snake_game import SnakeGameAI
+from snake_game import SnakeGameAI
 from ai_agent import Agent
 
 

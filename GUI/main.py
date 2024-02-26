@@ -1,6 +1,10 @@
 import pygame
 import sys
 
+from snake_game.snake_game import SnakeGameAI
+from flappy_bird.flappy_bird import FlappyBirdGame
+from ai_agent import Agent
+
 # Define some colors
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
@@ -18,42 +22,6 @@ clock = pygame.time.Clock()
 fps = 60
 
 
-class Button:
-    def __init__(self, text, x, y, width, height, normal_color, hover_color, click_color, text_color, action=None):
-        self.text = text
-        self.x = x
-        self.y = y
-        self.width = width
-        self.height = height
-        self.normal_color = normal_color
-        self.hover_color = hover_color
-        self.click_color = click_color
-        self.text_color = text_color
-        self.action = action
-
-        self.font = pygame.font.Font(None, 36)
-        self.clicked = False
-
-    def draw(self, surface):
-        mouse_pos = pygame.mouse.get_pos()
-        clicked = pygame.mouse.get_pressed()[0]
-
-        if self.x < mouse_pos[0] < self.x + self.width and self.y < mouse_pos[1] < self.y + self.height:
-            pygame.draw.rect(surface, self.hover_color, (self.x, self.y, self.width, self.height))
-            if clicked and not self.clicked and self.action is not None:
-                self.clicked = True
-                self.action()
-        else:
-            pygame.draw.rect(surface, self.normal_color, (self.x, self.y, self.width, self.height))
-
-        text_surface = self.font.render(self.text, True, self.text_color)
-        text_width, text_height = text_surface.get_size()
-        surface.blit(text_surface, (self.x + (self.width - text_width) // 2, self.y + (self.height - text_height) // 2))
-
-    def reset(self):
-        self.clicked = False
-
-
 class UI:
     def __init__(self, width, height, title):
         pygame.init()
@@ -68,21 +36,43 @@ class UI:
 
         self.corner_radius = 10
 
-    def draw_button(self, text, x, y, width, height, color, text_color, action=None):
+        self.buttons = []
+        self.button_width = 100
+        self.button_height = 35
+
+    def draw_button(self, text, x, y, color, text_color, action=None):
         mouse = pygame.mouse.get_pos()
         click = pygame.mouse.get_pressed()
 
-        pygame.draw.rect(self.screen, color, (x, y, width, height))
+        button_rect = pygame.Rect(x, y, self.button_width, self.button_height)
+        pygame.draw.rect(self.screen, color, button_rect)
 
-        if x <= mouse[0] <= x + width and y <= mouse[1] <= y + height:
+        if x <= mouse[0] <= x + self.button_width and y <= mouse[1] <= y + self.button_height:
             if click[0] and action is not None:
-                action()
+
+                action = action.split()
+                game = None
+
+                if action[1] == 'snake':
+                    game = SnakeGameAI(main_window=main_window)
+                elif action[1] == 'flappy':
+                    game = FlappyBirdGame(main_window=main_window)
+                elif action[1] == 'dino':
+                    pygame.quit()
+                    sys.exit()
+
+                agent = Agent(game)
+                if action[0] == 'train':
+                    agent.train(model_path=f"{action[1]}/model_v2.pth")
+                elif action[0] == 'play':
+                    agent.play(model_path=f"{action[1]}/model_v1.pth")
 
         text_surface = self.font.render(text, True, text_color)
         text_width, text_height = text_surface.get_size()
-        self.screen.blit(text_surface, (x + (width - text_width) // 2, y + (height - text_height) // 2))
+        self.screen.blit(text_surface,
+                         (x + (self.button_width - text_width) // 2, y + (self.button_height - text_height) // 2))
 
-    def draw_group(self, icon, x, y, color1, color2, color3, color4):
+    def draw_group(self, icon, x, y, color1, color2, color3, color4, game: str):
         icon_rect = icon.get_rect(center=(x, y))
         self.screen.blit(icon, icon_rect)
 
@@ -91,13 +81,13 @@ class UI:
         play_button_x = 100 + x
         play_button_y = y + 5
 
-        self.draw_button("Play", play_button_x, play_button_y, 100, 35, color1, color2,
-                         play_button_action)
+        self.draw_button("Play", play_button_x, play_button_y, color1, color2,
+                         f"play {game}")
 
         train_button_x = play_button_x
         train_button_y = y - 35 - 5
-        self.draw_button("Train", train_button_x, train_button_y, 100, 35, color3, color4,
-                         train_button_action)
+        self.draw_button("Train", train_button_x, train_button_y, color3, color4,
+                         f"train {game}")
 
     def main_loop(self):
         running = True
@@ -115,9 +105,9 @@ class UI:
             caption_rect = caption_surface.get_rect(center=(self.screen.get_width() // 2, 50))
             self.screen.blit(caption_surface, caption_rect)
 
-            self.draw_group(self.snake_icon, 300, 200, GREEN, WHITE, RED, WHITE)
-            self.draw_group(self.flappy_icon, 300, 350, BLUE, WHITE, YELLOW, WHITE)
-            self.draw_group(self.dino_icon, 300, 500, GREY, WHITE, LIGHT_GREY, BLACK)
+            self.draw_group(self.snake_icon, 300, 200, GREEN, WHITE, RED, WHITE, "snake")
+            self.draw_group(self.flappy_icon, 300, 350, BLUE, WHITE, YELLOW, WHITE, "flappy")
+            self.draw_group(self.dino_icon, 300, 500, GREY, WHITE, LIGHT_GREY, BLACK, "dino")
 
             # Update the display
             pygame.display.flip()
@@ -129,16 +119,11 @@ class UI:
         sys.exit()
 
 
-# Define the button actions (replace with your actual functionality)
-def play_button_action():
-    print("Play button clicked")
-
-
-def train_button_action():
-    print("Train button clicked")
-
-
-if __name__ == "__main__":
+def main_window():
     # Create and run the UI
     ui = UI(800, 600, "AI Agent Game")
     ui.main_loop()
+
+
+if __name__ == "__main__":
+    main_window()

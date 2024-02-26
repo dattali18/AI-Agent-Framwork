@@ -8,10 +8,13 @@ from ai_agent.game import AIAgentGame
 from typing import List, Tuple
 
 pygame.init()
+
+
 # font = pygame.font.Font('arial.ttf', 25)
 
 
-# font = pygame.font.SysFont('arial', 25)
+font = pygame.font.SysFont('arial', 25)
+
 
 class Direction(Enum):
     RIGHT = 1
@@ -38,8 +41,8 @@ SPEED = 60
 
 class SnakeGameAI(AIAgentGame):
 
-    def __init__(self, w=640, h=480):
-        super().__init__(input_size=11, output_size=3)
+    def __init__(self, w=640, h=480, main_window=None):
+        super().__init__(input_size=11, output_size=3, main_window=main_window)
 
         self.w = w
         self.h = h
@@ -229,6 +232,11 @@ class SnakeGameAI(AIAgentGame):
         # 1. collect user input
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
+                if self.main_window is not None:
+                    self.main_window()
+            #     else:
+            #         pygame.quit()
+            #         quit()
                 pygame.quit()
                 quit()
 

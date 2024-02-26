@@ -1,4 +1,4 @@
-from flappy_bird.flappy_bird import FlappyBirdGame
+from flappy_bird import FlappyBirdGame
 from ai_agent import Agent
 
 
