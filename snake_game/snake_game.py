@@ -3,9 +3,11 @@ import random
 from enum import Enum
 from collections import namedtuple
 import numpy as np
-from ai_agent.game import AIAgentGame
-
 from typing import List, Tuple
+
+from ai_agent import AIAgentGame
+
+
 
 pygame.init()
 

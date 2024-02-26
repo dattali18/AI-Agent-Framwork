@@ -1,7 +1,8 @@
 import pygame
 import random
 import numpy as np
-from ai_agent.game import AIAgentGame
+
+from ai_agent import AIAgentGame
 # -- Global constants
 # Colors
 
