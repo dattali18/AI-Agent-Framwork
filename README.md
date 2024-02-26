@@ -77,3 +77,16 @@ if __name__ == "__main__":
 ```
 
 Follow these steps to integrate the AI-Agent-Framework into your game and train/play with your AI agent. Remember, the specific game implementation details don't matter as long as you implement the required functions correctly. The `input_size` and `output_size` in the `super().__init__` should match the size of the state returned by `get_state` and the actions received by `play_step`, respectively.
+
+## GUI for the AI Agent with 3 examples
+
+### Images
+
+Main GUI Window
+<img width="400" src="/AI-Agent-Framwork/images/main_window.png">
+
+Snake Game Window
+<img width="400" src="/AI-Agent-Framwork/images/snake_window.png">
+
+Flappy Game Window
+<img width="400" src="/AI-Agent-Framwork/images/flappy_window.png">
