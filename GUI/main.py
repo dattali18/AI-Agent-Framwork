@@ -1,9 +1,10 @@
 import pygame
 import sys
 
-from snake_game.snake_game import SnakeGameAI
-from flappy_bird.flappy_bird import FlappyBirdGame
+from snake_game import SnakeGameAI
+from flappy_bird import FlappyBirdGame
 from ai_agent import Agent
+from dino_game import DinoAI
 
 # Define some colors
 BLACK = (0, 0, 0)
@@ -58,8 +59,7 @@ class UI:
                 elif action[1] == 'flappy':
                     game = FlappyBirdGame(main_window=main_window)
                 elif action[1] == 'dino':
-                    pygame.quit()
-                    sys.exit()
+                    game = DinoAI(main_window=main_window)
 
                 agent = Agent(game)
                 if action[0] == 'train':

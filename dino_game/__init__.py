@@ -1,0 +1,1 @@
+from dino_game.dino import DinoAI
