@@ -7,7 +7,7 @@ import sys
 
 from pygame import Surface, SurfaceType
 import numpy as np
-from ai_agent.game import AIAgentGame
+from ai_agent import AIAgentGame
 
 # from dinasaur import Dinosaur
 pygame.init()

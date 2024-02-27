@@ -3,6 +3,13 @@ import random
 import numpy as np
 
 from ai_agent import AIAgentGame
+
+import os
+
+# Construct the absolute path to the image file
+image_path = lambda name: os.path.abspath(
+    os.path.join(os.path.dirname(__file__), '..', 'flappy_bird', 'assets', 'sprites', name))
+
 # -- Global constants
 # Colors
 
@@ -19,6 +26,18 @@ SCREEN_HEIGHT = 800
 
 pygame.init()
 
+# Before the Player class definition
+bird_images = [
+    pygame.image.load(image_path('yellowbird-downflap.png')),
+    pygame.image.load(image_path('yellowbird-downflap.png')),
+    pygame.image.load(image_path('yellowbird-midflap.png')),
+]
+
+background_image = pygame.image.load(image_path('background-day.png'))
+
+pipe_images = pygame.image.load(image_path('pipe-green.png'))
+pipe_images_top = pygame.image.load(image_path('pipe-green-top.png'))
+
 
 class Player(pygame.sprite.Sprite):
     """ This class represents the bird that the player controls. """
@@ -29,8 +48,12 @@ class Player(pygame.sprite.Sprite):
         super().__init__()
 
         # Set height, width
-        self.image = pygame.Surface([30, 30])
-        self.image.fill(YELLOW)
+        # self.image = pygame.Surface([30, 30])
+        # self.image.fill(YELLOW)
+
+        # Use one of the bird images for the player
+        self.image = pygame.transform.scale(bird_images[0], (34, 24))
+        self.current_image = 0
 
         # Make our top-left corner the passed-in location.
         self.rect = self.image.get_rect()
@@ -54,6 +77,9 @@ class Player(pygame.sprite.Sprite):
         """ Change the speed of the player. """
         self.change_x += x
         self.change_y += y
+
+        # self.current_image = (self.current_image + 1) % 3
+        # self.image = bird_images[self.current_image]
 
     def calc_grav(self):
         """ Calculate effect of gravity. """
@@ -106,31 +132,42 @@ class Player(pygame.sprite.Sprite):
 class Pipe(pygame.sprite.Sprite):
     """ Pipe the player can fly into. """
 
-    def __init__(self, x, y, width, height):
+    def __init__(self, x, y, width, height, top: bool):
         """ Constructor for the pipe that the player can run into. """
         # Call the parent's constructor
         super().__init__()
 
         # Make a green pipe, of the size specified in the parameters
-        self.image = pygame.Surface([width, height])
-        self.image.fill(GREEN)
-        self.top_image = pygame.Surface([width, SCREEN_HEIGHT - height - 50])
-        self.top_image.fill(GREEN)
+        # self.image = pygame.Surface([width, height])
+        # self.image.fill(GREEN)
+
+        image = None
+
+        if top:
+            image = pygame.transform.scale(pipe_images_top, (width, height))
+        else:
+            image = pygame.transform.scale(pipe_images, (width, height))
+
+        self.image = image
+        # self.top_image = pygame.Surface([width, SCREEN_HEIGHT - height - 50])
+        # self.top_image.fill(GREEN)
+
+        # self.top_image = pygame.transform.scale(pipe_images_top, (width, SCREEN_HEIGHT - height - 50))
 
         self.rect = self.image.get_rect()
         self.rect.y = y
         self.rect.x = x
 
-        self.top_rect = self.top_image.get_rect()
-        self.top_rect.y = 0
-        self.top_rect.x = x
+        # self.top_rect = self.top_image.get_rect()
+        # self.top_rect.y = 0
+        # self.top_rect.x = x
 
         self.change_x = 2
 
     def update(self):
         """ Update the pipe position. """
         self.rect.x -= self.change_x
-        self.top_rect.x -= self.change_x
+        # self.top_rect.x -= self.change_x
 
 
 class FlappyBirdGame(AIAgentGame):
@@ -140,6 +177,8 @@ class FlappyBirdGame(AIAgentGame):
         self.distance = 0
         self.screen = pygame.display.set_mode([SCREEN_WIDTH, SCREEN_HEIGHT])
         pygame.display.set_caption('FlappySquare')
+
+        self.background = pygame.transform.scale(background_image, (SCREEN_WIDTH, SCREEN_HEIGHT))
 
         self.all_pipes = []
         self.pipe_count = 0
@@ -229,9 +268,10 @@ class FlappyBirdGame(AIAgentGame):
 
         return self.reward, done, self.distance
 
-    def render(self, fps=100):
+    def render(self, fps=60):
         self.all_sprite_list.update()
-        self.screen.fill(LIGHTBLUE)
+        # self.screen.fill(LIGHTBLUE)
+        self.screen.blit(self.background, (0, 0))
         self.all_sprite_list.draw(self.screen)
         # self.text = self.font.render("Score: " + str(self.player.score), True, WHITE)
         # self.screen.blit(self.text, [50, 50])
@@ -244,14 +284,15 @@ class FlappyBirdGame(AIAgentGame):
     def pipe_creation(self):
         self.pipe_hole = 200
         self.h = random.randrange(200, 700)
-        self.pipe = Pipe(SCREEN_WIDTH, self.h, 70, SCREEN_HEIGHT - self.h)
+
+        self.pipe = Pipe(SCREEN_WIDTH, self.h, 70, SCREEN_HEIGHT - self.h, False)
         self.pipe_list.add(self.pipe)
         self.player.pipes = self.pipe_list
         self.all_sprite_list.add(self.pipe)
 
         self.all_pipes.append(self.pipe)
 
-        self.pipe = Pipe(SCREEN_WIDTH, 0, 70, self.h - self.pipe_hole)
+        self.pipe = Pipe(SCREEN_WIDTH, 0, 70, self.h - self.pipe_hole, True)
         self.pipe_list.add(self.pipe)
         self.player.pipes = self.pipe_list
         self.all_sprite_list.add(self.pipe)

@@ -7,10 +7,7 @@ from typing import List, Tuple
 
 from ai_agent import AIAgentGame
 
-
-
 pygame.init()
-
 
 # font = pygame.font.Font('arial.ttf', 25)
 
@@ -29,10 +26,10 @@ Point = namedtuple('Point', 'x, y')
 
 # rgb colors
 WHITE = (255, 255, 255)
-WHITE2 = (217, 217, 217)
-RED = (200, 0, 0)
-BLUE1 = (0, 0, 255)
-BLUE2 = (0, 100, 255)
+WHITE2 = (180, 180, 180)
+RED = (180, 0, 0)
+# BLUE1 = (0, 0, 255)
+# BLUE2 = (0, 100, 255)
 BLACK = (0, 0, 0)
 GREEN1 = (9, 58, 6)
 GREEN2 = (31, 133, 28)
@@ -236,9 +233,9 @@ class SnakeGameAI(AIAgentGame):
             if event.type == pygame.QUIT:
                 if self.main_window is not None:
                     self.main_window()
-            #     else:
-            #         pygame.quit()
-            #         quit()
+                #     else:
+                #         pygame.quit()
+                #         quit()
                 pygame.quit()
                 quit()
 
