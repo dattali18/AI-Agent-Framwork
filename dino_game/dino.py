@@ -1,10 +1,6 @@
-from abc import ABC
-from typing import Union
-
 import pygame
 import os
 import random
-import sys
 
 import numpy as np
 from ai_agent import AIAgentGame
@@ -14,6 +10,7 @@ pygame.init()
 # Global Constants
 SCREEN_HEIGHT = 600
 SCREEN_WIDTH = 1100
+
 # SCREEN = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
 fps = 30
@@ -27,6 +24,7 @@ RUNNING = [
 ]
 
 JUMPING = pygame.image.load(image_path("Dino/DinoJump.png"))
+
 DUCKING = [
     pygame.image.load(image_path("Dino/DinoDuck1.png")),
     pygame.image.load(image_path("Dino/DinoDuck2.png")),
@@ -37,6 +35,7 @@ SMALL_CACTUS = [
     pygame.image.load(image_path("Cactus/SmallCactus2.png")),
     pygame.image.load(image_path("Cactus/SmallCactus3.png")),
 ]
+
 LARGE_CACTUS = [
     pygame.image.load(image_path("Cactus/LargeCactus1.png")),
     pygame.image.load(image_path("Cactus/LargeCactus2.png")),
@@ -62,10 +61,6 @@ class Dinosaur:
         self.run_img = RUNNING
         self.jump_img = JUMPING
 
-        self.dino_duck = False
-        self.dino_run = True
-        self.dino_jump = False
-
         self.step_index = 0
         self.jump_vel = self.JUMP_VEL
         self.image = self.run_img[0]
@@ -74,30 +69,17 @@ class Dinosaur:
         self.dino_rect.y = self.Y_POS
 
     def update(self, action):
-        if self.dino_duck:
+        action = action.index(1)
+
+        if action == 0:
             self.duck()
-        if self.dino_run:
+        elif action == 1:
             self.run()
-        if self.dino_jump:
+        else:
             self.jump()
 
         if self.step_index >= 10:
             self.step_index = 0
-
-        action = action.index(1)
-
-        if action == 0:
-            self.dino_duck = False
-            self.dino_run = False
-            self.dino_jump = True
-        elif action == 1:
-            self.dino_duck = True
-            self.dino_run = False
-            self.dino_jump = False
-        else:
-            self.dino_duck = False
-            self.dino_run = True
-            self.dino_jump = False
 
     # Ducking
     def duck(self):
@@ -115,15 +97,15 @@ class Dinosaur:
         self.dino_rect.y = self.Y_POS
         self.step_index = (self.step_index + 1) % len(self.run_img)
 
-    # Jumping
+    # TODO: refactor jump
     def jump(self):
         self.image = self.jump_img
-        if self.dino_jump:
-            self.dino_rect.y -= self.jump_vel * 4
-            self.jump_vel -= 0.8
-        if self.jump_vel < - self.JUMP_VEL:
-            self.dino_jump = False
-            self.jump_vel = self.JUMP_VEL
+        # if self.dino_jump:
+        #     self.dino_rect.y -= self.jump_vel * 4
+        #     self.jump_vel -= 0.8
+        # if self.jump_vel < - self.JUMP_VEL:
+        #     self.dino_jump = False
+        #     self.jump_vel = self.JUMP_VEL
 
     # Draw the dinosaur
     def draw(self, screen):
@@ -206,7 +188,6 @@ class DinoAI(AIAgentGame):
         self.points = 0
         self.obstacles = []
         self.death_count = 0
-        # self.player = Dinosaur()
 
     def get_state(self):
         """
@@ -238,27 +219,20 @@ class DinoAI(AIAgentGame):
             if event.type == pygame.QUIT:
                 if self.main_window is not None:
                     self.main_window()
-                # else:
-                #     pygame.quit()
-                #     quit()
                 pygame.quit()
                 quit()
-
-        if action == [1, 0]:  # Jump action
-            self.player.dino_jump = True
-        elif action == [0, 1]:  # Duck action
-            self.player.dino_duck = True
 
         reward = 0
         game_over = False
 
         for event in pygame.event.get():
-            if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
+            if event.type == pygame.QUIT:
                 game_over = True
+
+        self.player.update(action)
 
         self.screen.fill((255, 255, 255))
         self.player.draw(self.screen)
-        self.player.update(action)
 
         # This is where the obstacles are created
         if len(self.obstacles) == 0:
@@ -303,6 +277,7 @@ class DinoAI(AIAgentGame):
         Display the current score.
         """
         self.points += 1
+
         if self.points % 100 == 0:
             self.game_speed += 1
 

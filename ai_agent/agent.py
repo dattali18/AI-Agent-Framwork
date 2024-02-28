@@ -47,6 +47,7 @@ class Agent:
         # random moves: tradeoff exploration / exploitation
         size = self.game.output_size
         final_move: List[int] = [0] * size
+
         if training:
             self.epsilon = 250 - self.n_games
             # if random.randint(0, 10) == (self.n_games % 10):

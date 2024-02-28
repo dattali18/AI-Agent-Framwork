@@ -5,7 +5,7 @@ from ai_agent import Agent
 def main():
     game = FlappyBirdGame()
     agent = Agent(game)
-    agent.train(model_path="model.pth")
+    agent.train(model_path="model_v1.1.pth")
 
 
 if __name__ == "__main__":
