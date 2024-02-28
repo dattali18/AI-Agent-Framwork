@@ -3,13 +3,15 @@ import os
 import random
 
 import numpy as np
-from ai_agent import AIAgentGame
+from ai_agent import AIAgentGame, Agent
 
 pygame.init()
 
 # Global Constants
 SCREEN_HEIGHT = 600
 SCREEN_WIDTH = 1100
+
+FLOOR = 300
 
 # SCREEN = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
@@ -62,50 +64,41 @@ class Dinosaur:
         self.jump_img = JUMPING
 
         self.step_index = 0
-        self.jump_vel = self.JUMP_VEL
+
         self.image = self.run_img[0]
+
         self.dino_rect = self.image.get_rect()
-        self.dino_rect.x = self.X_POS
+
         self.dino_rect.y = self.Y_POS
+
+        self.dy = 0
+        self.gravity = 1.5
+        self.is_jumping = False
+
+        self.image_idx = 0
 
     def update(self, action):
         action = action.index(1)
 
         if action == 0:
-            self.duck()
-        elif action == 1:
-            self.run()
-        else:
             self.jump()
 
-        if self.step_index >= 10:
-            self.step_index = 0
+        self.dy += self.gravity
+        self.dino_rect.y += self.dy
 
-    # Ducking
-    def duck(self):
-        self.image = self.duck_img[self.step_index]
-        self.dino_rect = self.image.get_rect()
-        self.dino_rect.x = self.X_POS
-        self.dino_rect.y = self.Y_POS_DUCK
-        self.step_index = (self.step_index + 1) % len(self.duck_img)
+        # checking if the dino is on the floor
+        if self.dino_rect.y > SCREEN_HEIGHT - FLOOR:
+            self.dino_rect.y = SCREEN_HEIGHT - FLOOR
+            self.dy = 0
+            self.is_jumping = False
+            self.image_idx = (self.image_idx + 1) % len(self.run_img)
+            self.image = self.run_img[self.image_idx]
 
-    # Running
-    def run(self):
-        self.image = self.run_img[self.step_index]
-        self.dino_rect = self.image.get_rect()
-        self.dino_rect.x = self.X_POS
-        self.dino_rect.y = self.Y_POS
-        self.step_index = (self.step_index + 1) % len(self.run_img)
-
-    # TODO: refactor jump
     def jump(self):
-        self.image = self.jump_img
-        # if self.dino_jump:
-        #     self.dino_rect.y -= self.jump_vel * 4
-        #     self.jump_vel -= 0.8
-        # if self.jump_vel < - self.JUMP_VEL:
-        #     self.dino_jump = False
-        #     self.jump_vel = self.JUMP_VEL
+        if not self.is_jumping:
+            self.image = self.jump_img
+            self.is_jumping = True
+            self.dy = -28
 
     # Draw the dinosaur
     def draw(self, screen):
@@ -172,7 +165,7 @@ class DinoAI(AIAgentGame):
 
         self.game_speed = 15
         self.x_pos_bg = 0
-        self.y_pos_bg = 380
+        self.y_pos_bg = FLOOR + 80
         self.points = 0
         self.font = pygame.font.Font('freesansbold.ttf', 20)
         self.obstacles = []
@@ -180,11 +173,11 @@ class DinoAI(AIAgentGame):
         self.player = Dinosaur()
 
     def reset(self):
-        self.clock.tick(fps * 4)
+        self.clock.tick(fps // 10)
 
         self.game_speed = 15
         self.x_pos_bg = 0
-        self.y_pos_bg = 380
+        self.y_pos_bg = FLOOR + 80
         self.points = 0
         self.obstacles = []
         self.death_count = 0
@@ -193,6 +186,16 @@ class DinoAI(AIAgentGame):
         """
         Get the current state of the Dino game environment.
         """
+
+        """
+        state = [
+            player_y,
+            enemy_x,
+            enemy_height,
+            enemy_width
+        ]
+        """
+
         dino_x, dino_y = self.player.dino_rect.x, self.player.dino_rect.y
         obstacle_x, obstacle_y = 0, 0
         obstacle_type = 0
@@ -204,7 +207,7 @@ class DinoAI(AIAgentGame):
             obstacle_y = self.obstacles[0].rect.y
             obstacle_type = self.obstacles[0].type
             distance_to_obstacle = obstacle_x - dino_x
-            dino_y_velocity = self.player.jump_vel
+            dino_y_velocity = self.player.dy
 
         # Normalize state values
         state = [dino_x, dino_y, obstacle_x, obstacle_y, obstacle_type, distance_to_obstacle, dino_y_velocity]
@@ -251,6 +254,8 @@ class DinoAI(AIAgentGame):
             if self.player.dino_rect.colliderect(obstacle.rect):
                 reward = -1
                 game_over = True
+            else:
+                reward += 1
 
         self.background()
         self.score()
@@ -287,7 +292,7 @@ class DinoAI(AIAgentGame):
         self.screen.blit(text, textRect)
 
 
-# if __name__ == "__main__":
-#     dino_ai = DinoAI()
-#     agent = Agent(dino_ai)
-#     agent.train()
+if __name__ == "__main__":
+    dino_ai = DinoAI()
+    agent = Agent(dino_ai)
+    agent.train("model_v1.0.pth")
