@@ -26,6 +26,8 @@ SCREEN_HEIGHT = 800
 
 pygame.init()
 
+FPS = 100
+
 # Before the Player class definition
 bird_images = [
     pygame.image.load(image_path('yellowbird-downflap.png')),
@@ -201,6 +203,7 @@ class FlappyBirdGame(AIAgentGame):
         self.all_pipes = []
         self.state = None
         self.pipe_count = 0
+        self.h = 450
         self.all_sprite_list = pygame.sprite.Group()
         self.pipe_list = pygame.sprite.Group()
         self.player = Player(50, 300)
@@ -268,7 +271,7 @@ class FlappyBirdGame(AIAgentGame):
 
         return self.reward, done, self.distance
 
-    def render(self, fps=60):
+    def render(self, fps=FPS):
         self.all_sprite_list.update()
         # self.screen.fill(LIGHTBLUE)
         self.screen.blit(self.background, (0, 0))
@@ -283,7 +286,8 @@ class FlappyBirdGame(AIAgentGame):
 
     def pipe_creation(self):
         self.pipe_hole = 200
-        self.h = random.randrange(200, 700)
+        self.h = (self.h + random.randint(-100, 100))
+        self.h = self.h if 200 < self.h < 700 else 450
 
         self.pipe = Pipe(SCREEN_WIDTH, self.h, 70, SCREEN_HEIGHT - self.h, False)
         self.pipe_list.add(self.pipe)
