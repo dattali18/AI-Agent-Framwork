@@ -1,3 +1,5 @@
+# AI-Agent-Game
+
 ## How to Use AI-Agent-Framework
 
 ### Overview
@@ -88,8 +90,12 @@ Main GUI Window
 
 Snake Game Window
 
-<img width="400" src="https://github.com/dattali18/AI-Agent-Framwork/blob/main/images/snake_window.png">
+<img width="400" src="https://github.com/dattali18/AI-Agent-Framwork/blob/main/images/snake.png">
 
 Flappy Game Window
 
-<img width="400" src="https://github.com/dattali18/AI-Agent-Framwork/blob/main/images/flappy_window.png">
+<img width="400" src="https://github.com/dattali18/AI-Agent-Framwork/blob/main/images/flappy.png">
+
+Dino Game Window
+
+<img width="400" src="https://github.com/dattali18/AI-Agent-Framwork/blob/main/images/dino.png">
