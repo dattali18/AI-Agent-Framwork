@@ -70,6 +70,7 @@ class Dinosaur:
         self.dino_rect = self.image.get_rect()
 
         self.dino_rect.y = self.Y_POS
+        self.dino_rect.x = 80
 
         self.dy = 0
         self.gravity = 1.5
@@ -295,4 +296,4 @@ class DinoAI(AIAgentGame):
 if __name__ == "__main__":
     dino_ai = DinoAI()
     agent = Agent(dino_ai)
-    agent.train("model_v1.0.pth")
+    agent.train("model_v1.0.pth", training=True)
