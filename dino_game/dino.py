@@ -134,6 +134,8 @@ class SmallCactus(Obstacle):
         self.type = random.randint(0, 2)
         super().__init__(image, self.type, game_speed, obstacles)
         self.rect.y = 325
+        self.width = self.image[self.type].get_width()
+        self.height = self.image[self.type].get_height()
 
 
 class LargeCactus(Obstacle):
@@ -141,6 +143,8 @@ class LargeCactus(Obstacle):
         self.type = random.randint(0, 2)
         super().__init__(image, self.type, game_speed, obstacles)
         self.rect.y = 300
+        self.width = self.image[self.type].get_width()
+        self.height = self.image[self.type].get_height()
 
 
 class Bird(Obstacle):
@@ -149,6 +153,8 @@ class Bird(Obstacle):
         super().__init__(image, self.type, game_speed, obstacles)
         self.rect.y = 250
         self.index = 0
+        self.width = self.image[self.type].get_width()
+        self.height = self.image[self.type].get_height()
 
     def draw(self, screen):
         if self.index >= 9:
@@ -199,19 +205,25 @@ class DinoAI(AIAgentGame):
 
         dino_x, dino_y = self.player.dino_rect.x, self.player.dino_rect.y
         obstacle_x, obstacle_y = 0, 0
-        obstacle_type = 0
+        #obstacle_type = 0
         distance_to_obstacle = 0
-        dino_y_velocity = 0
+        #dino_y_velocity = 0
+        obstacle_width = 0
+        obstacle_height = 0
 
         if len(self.obstacles) > 0:
             obstacle_x = self.obstacles[0].rect.x
             obstacle_y = self.obstacles[0].rect.y
-            obstacle_type = self.obstacles[0].type
+            #obstacle_type = self.obstacles[0].type
             distance_to_obstacle = obstacle_x - dino_x
-            dino_y_velocity = self.player.dy
+            #dino_y_velocity = self.player.dy
+            obstacle_width = self.obstacles[0].width
+            obstacle_height = self.obstacles[0].height
+
 
         # Normalize state values
-        state = [dino_x, dino_y, obstacle_x, obstacle_y, obstacle_type, distance_to_obstacle, dino_y_velocity]
+        #state = [dino_x, dino_y, obstacle_x, obstacle_y, obstacle_type, distance_to_obstacle, dino_y_velocity]
+        state = [dino_y, obstacle_x, obstacle_y, distance_to_obstacle, obstacle_width, obstacle_height]
         state = np.array(state, dtype=float)
         return (state - np.min(state)) / (np.max(state) - np.min(state))
 
