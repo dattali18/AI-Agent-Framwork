@@ -151,7 +151,7 @@ class Bird(Obstacle):
     def __init__(self, image, game_speed, obstacles):
         self.type = 0
         super().__init__(image, self.type, game_speed, obstacles)
-        self.rect.y = 250
+        self.rect.y = 180
         self.index = 0
         self.width = self.image[self.type].get_width()
         self.height = self.image[self.type].get_height()
@@ -165,7 +165,7 @@ class Bird(Obstacle):
 
 class DinoAI(AIAgentGame):
     def __init__(self, main_window=None):
-        super().__init__(input_size=7, output_size=3, main_window=main_window)
+        super().__init__(input_size=6, output_size=2, main_window=main_window)
         pygame.init()
         self.clock = pygame.time.Clock()
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
