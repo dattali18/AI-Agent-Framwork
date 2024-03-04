@@ -1,5 +1,6 @@
 import pygame
 import sys
+import os
 
 from snake_game import SnakeGameAI
 from flappy_bird import FlappyBirdGame
@@ -22,6 +23,12 @@ LIGHT_GREY = (246, 246, 246)
 clock = pygame.time.Clock()
 fps = 60
 
+image_path = lambda name: os.path.abspath(
+    os.path.join(os.path.dirname(__file__), 'icons', name))
+
+model_path = lambda name: os.path.abspath(
+    os.path.join(os.path.dirname(__file__), 'model', name))
+
 
 class UI:
     def __init__(self, width, height, title):
@@ -31,9 +38,9 @@ class UI:
         self.font = pygame.font.Font(None, 32)  # Font for buttons
         self.caption_font = pygame.font.Font(None, 48)  # Font for the caption
 
-        self.snake_icon = pygame.image.load("icons/snake-icon.png")
-        self.flappy_icon = pygame.image.load("icons/flappy-icon.png")
-        self.dino_icon = pygame.image.load("icons/dino-icon.png")
+        self.snake_icon = pygame.image.load(image_path("snake-icon.png"))
+        self.flappy_icon = pygame.image.load(image_path("flappy-icon.png"))
+        self.dino_icon = pygame.image.load(image_path("dino-icon.png"))
 
         self.corner_radius = 10
 
@@ -63,9 +70,9 @@ class UI:
 
                 agent = Agent(game)
                 if action[0] == 'train':
-                    agent.train(model_path=f"{action[1]}/model_v2.pth")
+                    agent.train(model_path=model_path(f"{action[1]}/model_v2.pth"))
                 elif action[0] == 'play':
-                    agent.play(model_path=f"{action[1]}/model_v1.pth")
+                    agent.train(model_path=model_path(f"{action[1]}/model_v1.pth"), training=False)
 
         text_surface = self.font.render(text, True, text_color)
         text_width, text_height = text_surface.get_size()
@@ -124,6 +131,5 @@ def main_window():
     ui = UI(800, 600, "AI Agent Game")
     ui.main_loop()
 
-
-if __name__ == "__main__":
-    main_window()
+# if __name__ == "__main__":
+#     main_window()
